@@ -1,4 +1,4 @@
-const { Thought } = require('../models/user');
+const { Thought, User } = require('../models/user');
 
 module.exports = {
     getThoughts(req, res) {
@@ -15,12 +15,24 @@ module.exports = {
             )
             .catch((err) => res.status(500).json(err));
     },
+
     createThought(req, res) {
         Thought.create(req.body)
-            .User.findOneAndUpdat({ _id: req.body.userId }, { $addToSet: { thoughts: req.params.thoughtId } })
-            .then((data) => res.json(data))
-            .catch((err) => res.status(500).json(err));
+            .then(({ _id }) => {
+                return User.findOneAndUpdate({ _id: req.body.userId }, { $push: { thoughts: _id } });
+            })
+            .then((data) => {
+                if (!data) {
+                    res.status(404).json({ message: 'user not found' });
+                    return;
+                }
+                res.json(data);
+            })
+            .catch((err) => res.json(err));
     },
+
+
+
     updateThought(req, res) {
         Thought.updateOne({ _id: req.params.thoughtId }, req.body)
             .then((data) => res.json(data))
@@ -32,7 +44,8 @@ module.exports = {
             .catch((err) => res.status(500).json(err));
     },
     createReaction(req, res) {
-        Thought.findOneAndUpdate({ _id: req.params.thoughtId }, { $addToSet: { reactions: req.params.reactionId } })
+        Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId }, { $push: { reactions: req.body } })
             .then((data) => res.json(data))
             .catch((err) => res.status(500).json(err));
     },

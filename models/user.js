@@ -14,42 +14,21 @@ const userSchema = new Schema({
         match: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,63})?$/,
         // upper length of 63 chars to allow for new gTLD (https://newgtlds.icann.org/en/)
     },
-    thoughts: [{ type: Schema.Types.ObjectId, ref: 'thought' }],
-    friends: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+    thoughts: [{ type: Schema.Types.ObjectId, ref: 'Thought' }],
+    friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 },
     {
         toJSON: {
             virtuals: true,
-        }
+            getters:true
+        },
+        id: false
     }
 );
-
-const thoughtSchema = new Schema({
-    thoughtText: {
-        type: String,
-        required: true,
-        minLength: 1,
-        maxLength: 280
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    username: {
-        type: String,
-        required: true
-    },
-    reactions: [{ type: Schema.Types.ObjectId, ref: 'reaction' }]
-}, {
-    toJSON: {
-        virtuals: true,
-    }
-})
-
 const reactionSchema = new Schema({
     reactionID: {
         type: Schema.Types.ObjectId,
-        default: () => new Schema.Types.ObjectId
+        default: () => new Types.ObjectId
     },
     reactionBody: {
         type: String,
@@ -68,9 +47,36 @@ const reactionSchema = new Schema({
     {
         toJSON: {
             getters: true,
-        }
+        },
+        id: false,
     }
 );
+
+const thoughtSchema = new Schema({
+    thoughtText: {
+        type: String,
+        required: true,
+        minLength: 1,
+        maxLength: 280
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    username: {
+        type: String,
+        required: true
+    },
+    reactions: [reactionSchema]
+}, {
+    toJSON: {
+        virtuals: true,
+        getters:true
+    },
+    id: false,
+})
+
+
 
 userSchema
     .virtual('friendCount')
@@ -84,8 +90,8 @@ thoughtSchema
         return this.reactions.length
     });
 
-const User = model('user', userSchema)
-const Thought = model('thought', thoughtSchema)
+const User = model('User', userSchema)
+const Thought = model('Thought', thoughtSchema)
 
 
 // user
