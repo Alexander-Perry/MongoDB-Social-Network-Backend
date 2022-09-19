@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose');
 
+// User Schema
 const userSchema = new Schema({
     username: {
         type: String,
@@ -20,11 +21,12 @@ const userSchema = new Schema({
     {
         toJSON: {
             virtuals: true,
-            getters:true
+            getters: true
         },
         id: false
     }
 );
+// Reaction Schema (needs to be before Thought Schema)
 const reactionSchema = new Schema({
     reactionID: {
         type: Schema.Types.ObjectId,
@@ -51,7 +53,7 @@ const reactionSchema = new Schema({
         id: false,
     }
 );
-
+// Thought Schema
 const thoughtSchema = new Schema({
     thoughtText: {
         type: String,
@@ -71,41 +73,29 @@ const thoughtSchema = new Schema({
 }, {
     toJSON: {
         virtuals: true,
-        getters:true
+        getters: true
     },
     id: false,
 })
 
-
-
+//Virtuals - userSchema 
 userSchema
     .virtual('friendCount')
+    // get count of friends
     .get(function () {
         return this.friends.length
     });
 
+// Virtuals - thoughtSchema
 thoughtSchema
     .virtual('reactionCount')
     .get(function () {
+        // get number of reactions
         return this.reactions.length
     });
 
+// Create the documents
 const User = model('User', userSchema)
 const Thought = model('Thought', thoughtSchema)
-
-
-// user
-// Schema Settings:
-// Create a virtual called friendCount that retrieves the length of the user's friends array field on query.
-
-//thought
-// Schema Settings:
-// Create a virtual called reactionCount that retrieves the length of the thought's reactions array field on query.
-
-//reaction
-// Schema Settings:
-// This will not be a model, but rather will be used as the reaction field's subdocument schema in the Thought model.
-// createdAt:     // Use a getter method to format the timestamp on query
-
 
 module.exports = { User, Thought };
