@@ -53,7 +53,7 @@ module.exports = {
     },
     // Delete a reaction DELETE '/api/thoughts/:thoughtID/reactions/:reactionId'
     deleteReaction(req, res) {
-        Thought.findOneAndUpdate({ _id: req.params.thoughtId }, { $pull: { reactions: req.params.reactionId } }, {new:true})
+        Thought.findOneAndUpdate({ _id: req.params.thoughtId }, { $pull: { reactions: { _id: req.params.reactionId } } }, {new:true})
             .then((data) => res.json(data))
             .catch((err) => res.status(500).json(err));
     }
