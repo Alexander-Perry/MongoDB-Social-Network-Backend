@@ -25,25 +25,25 @@ module.exports = {
     },
     // Update User details PUT '/api/users/:userId'
     updateUser(req, res) {
-        User.updateOne({ _id: req.params.userId }, req.body)
+        User.updateOne({ _id: req.params.userId }, req.body, {new:true})
             .then((data) => res.json(data))
             .catch((err) => res.status(500).json(err));
     },
     // delete User DELETE '/api/users/:userId'
     deleteUser(req, res) {
-        User.deleteOne({ _id: req.params.userId })
+        User.deleteOne({ _id: req.params.userId }, {new:true})
             .then((data) => res.json(data))
             .catch((err) => res.status(500).json(err));
     },
     // add Friend POST '/api/users/:userId/friends/:friendId'
     addFriend(req, res) {
-        User.findOneAndUpdate({ _id: req.params.userId }, { $addToSet: { friends: req.params.friendId } })
+        User.findOneAndUpdate({ _id: req.params.userId }, { $addToSet: { friends: req.params.friendId } }, {new:true})
             .then((data) => res.json(data))
             .catch((err) => res.status(500).json(err));
     },
     // Remove Friend Delete '/api/users/:userId/friends/:friendId'
     removeFriend(req, res) {
-        User.findOneAndUpdate({ _id: req.params.userId }, { $pull: { friends: req.params.friendId } })
+        User.findOneAndUpdate({ _id: req.params.userId }, { $pull: { friends: req.params.friendId } }, {new:true})
             .then((data) => res.json(data))
             .catch((err) => res.status(500).json(err));
     },

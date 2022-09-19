@@ -21,7 +21,7 @@ module.exports = {
     createThought(req, res) {
         Thought.create(req.body)
             .then(({ _id }) => {
-                return User.findOneAndUpdate({ _id: req.body.userId }, { $addToSet: { thoughts: _id } });
+                return User.findOneAndUpdate({ _id: req.body.userId }, { $addToSet: { thoughts: _id } }, {new:true});
             })
             .then((data) => {
                 if (!data) {
@@ -34,7 +34,7 @@ module.exports = {
     },
     // Update a thought PUT '/api/thoughts/:thoughtId'
     updateThought(req, res) {
-        Thought.updateOne({ _id: req.params.thoughtId }, req.body)
+        Thought.updateOne({ _id: req.params.thoughtId }, req.body, {new:true})
             .then((data) => res.json(data))
             .catch((err) => res.status(500).json(err));
     },
@@ -47,13 +47,13 @@ module.exports = {
     // Create a reaction POST '/api/thoughts/:thoughtId/reactions'
     createReaction(req, res) {
         Thought.findOneAndUpdate(
-            { _id: req.params.thoughtId }, { $push: { reactions: req.body } })
+            { _id: req.params.thoughtId }, { $push: { reactions: req.body } }, {new:true})
             .then((data) => res.json(data))
             .catch((err) => res.status(500).json(err));
     },
     // Delete a reaction DELETE '/api/thoughts/:thoughtID/reactions/:reactionId'
     deleteReaction(req, res) {
-        Thought.findOneAndUpdate({ _id: req.params.thoughtId }, { $pull: { reactions: req.params.reactionId } })
+        Thought.findOneAndUpdate({ _id: req.params.thoughtId }, { $pull: { reactions: req.params.reactionId } }, {new:true})
             .then((data) => res.json(data))
             .catch((err) => res.status(500).json(err));
     }
